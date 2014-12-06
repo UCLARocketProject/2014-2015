@@ -20,13 +20,13 @@ void setup(void)
   /* Initialise the sensors */
   if(!accel.begin())
   {
-    /* There was a problem detecting the LSM303 ... check your connections */
+    /* There was a problem detecting the LSM303 acceleromter... check your connections */
     Serial.println(F("Ooops, no LSM303 detected ... Check your wiring!"));
     while(1);
   }
   if(!mag.begin())
   {
-    /* There was a problem detecting the LSM303 ... check your connections */
+    /* There was a problem detecting the LSM303 magnetometer... check your connections */
     Serial.println("Ooops, no LSM303 detected ... Check your wiring!");
     while(1);
   }
@@ -37,6 +37,15 @@ void setup(void)
     while(1);
   }
   
+  Serial.print("Acceleromter: "); Serial.print("");
+  Serial.print("Max value [m/s^2]: "); Serial.print(accel.max_value);
+  Serial.print("Min value [m/s^2]: "); Serial.print(accel.min_value);
+  Serial.print("Resolution [m/s^2]: "); Serial.print(accel.resolution);
+  
+  Serial.print("Magnetometer: "); Serial.print(""); 
+  Serial.print("Max value [micro-Tesla]: "); Serial.print(mag.max_value);
+  Serial.print("Min value [micro-Tesla]: "); Serial.print(mag.min_value);
+  Serial.print("Resolution [micro-Tesla]: "); Serial.print(accel.resolution); 
 }
 
 void loop(void) 
