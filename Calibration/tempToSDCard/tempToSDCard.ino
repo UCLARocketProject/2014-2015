@@ -6,6 +6,9 @@ void setup()
   // This is needed for the duemilanove and uno without ethernet shield
   const int sdCardPin = 10;
   int loopCount = 0;
+  
+  // Temperature sensor at A0
+  int digitalPin = 11;
 
   // TODO: Serial output for testing only. 
   Serial.begin(9600);
@@ -36,23 +39,26 @@ void loop()
   for (int i = 0; i < numValues; i++) {
     // Read raw value, which is 0-1023
     double sensorValue = (double)digitalRead(digitalPin);
-
+    
     // Compute as fraction of voltage against 5V max
     double voltage = (sensorValue / 1023) * 5;
 
     // Convert:        Temperature = 100 * voltage - 50
     // Equation form:  T = 100 * V - 50
     double temp = 100 * voltage - 50;
-    dataString += String(sensorValue);
+    Serial.println(temp);
+    dataString += String(temp);
+    dataString += "Degrees Celsius";
     dataString += "\n";
   }
 
-  sdWrite("dataString");
+  sdWrite(dataString);
+  return;
 }
 
 /*
-Filename MUST be <=8 characters (not including the file extension) or the
-file will not be created
+Filename MUST be <=8 characters (not including 
+the file extension) or the file will not be created
 */
 bool sdWrite(String data) 
 {
