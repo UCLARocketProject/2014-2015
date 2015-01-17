@@ -53,7 +53,7 @@ void loop()
  */
 bool SD_write(String data) 
 {
-    File dataFile = SD.open("alex.txt", FILE_WRITE);
+    File dataFile = SD.open("temp.txt", FILE_WRITE);
     // If the file is available, write to it:
     if (dataFile) {
         dataFile.println(data);
@@ -63,7 +63,7 @@ bool SD_write(String data)
       }
   // If the file isn't open, pop up an error:
     else {
-        Serial.println("error opening file");
+        Serial.println("Error opening file");
         dataFile.close();
     }
 }
