@@ -12,7 +12,7 @@ const int numValues = 100;
 // and Uno without ethernet shield
 const int SDCardPin = 10;
 // Analog 0
-const int tempPin = 11;
+const int tempPin = A0;
 // Range of TMP36
 const int TMP36_range = 1023;
 // Maximum voltage response of TMP36
@@ -79,15 +79,15 @@ double voltToTemp(int voltage)
  * spanning 0 to 1023. 
  * pinNum is the digital pin number. 
  * voltMax is the maximum voltage response of the sensor
+ * Returns Temperature reading in Celsius
  */
 double temperature(int sensorRange, int pinNum, unsigned voltMax)
 {
         // Read raw value, which is 0-sensorRange
-        double sensorValue = (double)digitalRead(pinNum);
-
+        double sensorValue = (double)analogRead(pinNum);
         // Compute as fraction of voltage against voltage max
         double voltage = (sensorValue / sensorRange) * voltMax;
-    
+        Serial.println(voltToTemp(voltage));
         return voltToTemp(voltage);
 }
 
