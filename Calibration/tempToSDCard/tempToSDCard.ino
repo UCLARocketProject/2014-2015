@@ -40,18 +40,17 @@ void loop()
     for (int i = 0; i < numValues; i++) {
         double temp 
             = temperature(TMP36_range, tempPin, TMP36_maxVolt);
-        data += String(temp);
-        data += '\n';
+        Serial.println(temp);
+        SD_write(temp);
+        // data += '\n';
     }
-
-    SD_write(data);
 }
 
 /*
  * Filename MUST be <=8 characters (not including the 
  * file extension) or the file will not be created
  */
-bool SD_write(String data) 
+bool SD_write(double data) 
 {
     File dataFile = SD.open("today.txt", FILE_WRITE);
     // If the file is available, write to it:
@@ -59,7 +58,7 @@ bool SD_write(String data)
         dataFile.println(data);
         dataFile.close();
         // Print to the serial port too:
-        // Serial.println(data);
+        Serial.println(data);
       }
   // If the file isn't open, pop up an error:
     else {
@@ -87,7 +86,7 @@ double temperature(int sensorRange, int pinNum, unsigned voltMax)
         double sensorValue = (double)analogRead(pinNum);
         // Compute as fraction of voltage against voltage max
         double voltage = (sensorValue / sensorRange) * voltMax;
-        Serial.println(voltToTemp(voltage));
+        // Serial.println(voltToTemp(voltage));
         return voltToTemp(voltage);
 }
 

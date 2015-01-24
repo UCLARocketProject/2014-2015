@@ -21,7 +21,9 @@ void setup() {
 }
 
 void loop() {
-  sdWrite("none");
+  String test;
+  test = "Kai";
+  sdWrite(test);
 }
 
 /*
@@ -29,7 +31,7 @@ Filename MUST be <=8 characters (not including the file extension) or the
 file will not be created
 */
 bool sdWrite(String data) {
-  File dataFile = SD.open("alex.txt", FILE_WRITE);
+  File dataFile = SD.open("kai.txt", FILE_WRITE);
   // if the file is available, write to it:
   if (dataFile) {
     dataFile.println(data);
