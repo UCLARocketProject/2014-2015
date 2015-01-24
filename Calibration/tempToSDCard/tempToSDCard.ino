@@ -53,13 +53,13 @@ void loop()
  */
 bool SD_write(String data) 
 {
-    File dataFile = SD.open("temp.txt", FILE_WRITE);
+    File dataFile = SD.open("today.txt", FILE_WRITE);
     // If the file is available, write to it:
     if (dataFile) {
         dataFile.println(data);
         dataFile.close();
         // Print to the serial port too:
-        Serial.println(data);
+        // Serial.println(data);
       }
   // If the file isn't open, pop up an error:
     else {
@@ -69,9 +69,9 @@ bool SD_write(String data)
 }
 
 /* TMP36 conversion from voltage to temperature in Celsius */
-double voltToTemp(int voltage)
+double voltToTemp(double voltage)
 {
-    return 100 * voltage - 50;
+    return 100.0 * voltage - 50.0;
 }
 
 /* sensorRange is the range of values returned by 
