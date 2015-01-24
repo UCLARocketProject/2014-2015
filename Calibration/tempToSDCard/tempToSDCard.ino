@@ -6,8 +6,6 @@
 #include <SD.h>
 #include <SPI.h>
 
-// Number of desired data points
-const int numValues = 100;
 // This is needed for the Duemilanove 
 // and Uno without ethernet shield
 const int SDCardPin = 10;
@@ -36,34 +34,40 @@ void setup()
 
 void loop() 
 {
-    String data;
-    for (int i = 0; i < numValues; i++) {
-        double temp 
-            = temperature(TMP36_range, tempPin, TMP36_maxVolt);
-        Serial.println(temp);
-        SD_write(temp);
-        // data += '\n';
-    }
+    String data = "";
+    double temp 
+        = temperature(TMP36_range, tempPin, TMP36_maxVolt);
+    data += String(temp);
+    
+    if ( !SD_write(data) ) {
+        Serial.println("Error opening file");
+    } 
 }
 
 /*
  * Filename MUST be <=8 characters (not including the 
  * file extension) or the file will not be created
  */
-bool SD_write(double data) 
+bool SD_write(String data) 
 {
     File dataFile = SD.open("today.txt", FILE_WRITE);
     // If the file is available, write to it:
     if (dataFile) {
-        dataFile.println(data);
+        delay(250);
+        dataFile.print(data);
+        delay(250);
         dataFile.close();
+        delay(250);
         // Print to the serial port too:
         Serial.println(data);
+        
+        return true;
       }
-  // If the file isn't open, pop up an error:
+  // If the file isn't open, return false:
     else {
-        Serial.println("Error opening file");
         dataFile.close();
+        
+        return false;
     }
 }
 
