@@ -7,7 +7,8 @@
 # from SciPy documentation found at: 
 # http://wiki.scipy.org/Cookbook/FIRFilter
 
-from numpy import cos, sin, pi, absolute, arange
+import numpy
+from numpy import cos, sin, pi, absolute, arange, array
 from scipy.signal import kaiserord, lfilter, firwin, freqz
 from pylab import figure, clf, plot, xlabel, ylabel, xlim, \
                   ylim, title, grid, axes, show
@@ -16,12 +17,34 @@ from pylab import figure, clf, plot, xlabel, ylabel, xlim, \
 # Create a signal for demonstration.
 #------------------------------------------------
 
-sample_rate = 100.0
+sample_rate = 1000.0
 nsamples = 400
 t = arange(nsamples) / sample_rate
 x = cos(2*pi*0.5*t) + 0.2*sin(2*pi*2.5*t+0.1) + \
         0.2*sin(2*pi*15.3*t) + 0.1*sin(2*pi*16.7*t + 0.1) + \
             0.1*sin(2*pi*23.45*t+.8)
+
+
+"""f = open("sample-formatted.txt", 'r')
+times = []
+voltage = []
+
+# Loop over lines
+i = 0
+for line in f:
+    # Even: time
+    if i % 2 == 0:
+        times.append(line)
+    # Odd: voltage
+    else:
+        voltage.append(line)
+
+    i += 1
+
+x = numpy.array(voltage)
+arr = [numpy.array(times), numpy.array(voltage)]
+timesVoltage = numpy.array(arr) 
+"""
 
 #------------------------------------------------
 # Create a FIR filter and apply it to x.
@@ -33,7 +56,7 @@ nyq_rate = sample_rate / 2.0
 # The desired width of the transition from pass to stop,
 # relative to the Nyquist rate.  We'll design the filter
 # with a 5 Hz transition width.
-width = 5.0/nyq_rate
+width = 4.0/nyq_rate
 
 # The desired attenuation in the stop band, in dB.
 ripple_db = 60.0
@@ -88,6 +111,7 @@ ylim(0.0, 0.0025)
 grid(True)
 
 #------------------------------------------------
+
 # Plot the original and filtered signals.
 #------------------------------------------------
 
