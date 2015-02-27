@@ -73,7 +73,7 @@ class excelLoader:
         self.mWorkbook = self.initExcel(self.SPREADSHEET)
         #a new worksheet will be loaded into mWorksheets dict
         self.getNewWorksheet(self.defaultSheet)
-        #self.writeData()
+        self.writeData()
         self.finish()
         
 if __name__ == '__main__':
