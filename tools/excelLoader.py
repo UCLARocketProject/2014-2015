@@ -85,6 +85,7 @@ if __name__ == '__main__':
         print "Missing Arguments."
         print "Usage: excelLoader.py [option] ... [-default | -c [source] [sink]| -d]"
         print "Try excelLoader.py -help for more information."
+        badArgs = 1
     #command line and argument descriptions
     elif args[1] == "-help":
         print("Options:\n" +
