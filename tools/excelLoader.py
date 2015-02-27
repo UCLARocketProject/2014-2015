@@ -50,7 +50,6 @@ class excelLoader:
             col = 0
             for dataCol in dataRow:
                 self.mWorksheets[self.defaultSheet].write(row, col, self.dataList[row][col])
-                print self.dataList[row][col]
                 col += 1
             row += 1
 
