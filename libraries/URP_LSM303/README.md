@@ -26,4 +26,4 @@ Light sensors will always report units in lux, gyroscopes will always report uni
 
 Adafruit invests time and resources providing this open source code.  Please support Adafruit and open-source hardware by purchasing products from Adafruit!
 
-Written by Kevin (KTOWN) Townsend for Adafruit Industries.
+Written by Kevin (KTOWN) Townsend for Adafruit Industries. Editted by Vlad.
