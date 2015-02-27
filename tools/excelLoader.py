@@ -82,7 +82,7 @@ if __name__ == '__main__':
     args = sys.argv
     if len(args) == 1:
         print "Missing Arguments."
-        print "Usage: excelLoader.py [option] ... [-default | -c [source] [sink]| -d]"
+        print "Usage: excelLoader.py [option] ... [-default | -c [source] [sink] | -d]"
         print "Try excelLoader.py -help for more information."
         badArgs = 1
     #command line and argument descriptions
@@ -118,8 +118,8 @@ if __name__ == '__main__':
             badArgs = 1
         #if they used option -d
         try:
-            if(arg[4] == '-d'):
-                EXCEL = os.path.join(os.path.expanduser('~'), 'Desktop') + args[3]
+            if(args[4] == '-d'):
+                EXCEL = os.path.join(os.path.expanduser('~'), 'Desktop/') + args[3]
         except:
             #they didnt pass another argument
             pass
