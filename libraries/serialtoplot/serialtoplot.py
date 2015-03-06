@@ -3,21 +3,24 @@
 
  UCLA Rocket Project, 2014-2015
  Written by Ky-Cuong L. Huynh
+
+ All code under the MIT License
  Last updated: 5 March 2015
 
 """
 
 """
-See https://github.com/UCLARocketProject/2014-2015/wiki/Specification:-serialtoplot
-for the latest specification of this module's behavior. 
+See:
+https://github.com/UCLARocketProject/2014-2015/wiki/Specification:-serialtoplot
+for the latest specification of this module's behavior.
 
-Compatibility: Python 2.7.x or greater.
+Compatibility: Python 2.7.x
 
 """
 
+
 import serial   # PySerial for USB serial communication
 
-from __future__ import print_function # Compatibility with Python 3.x
 
 class SerialRadio(object):
 
@@ -32,11 +35,11 @@ class SerialRadio(object):
             self.ser.baudrate = 19200
             self.ser.timeout = timeout
         except ValueError:
-            print("Invalid options for new SerialRadio.")
+            print "Invalid options for new SerialRadio."
         except SerialException:
-            print("SerialException from PySerial. Is the radio connected?")
+            print "SerialException from PySerial. Is the radio connected?"
         except:
-            print("Unknown error in SerialRadio initialization.")
+            print "Unknown error in SerialRadio initialization."
         else:
             self.ready = True
 
@@ -45,17 +48,17 @@ class SerialRadio(object):
         try:
             self.ser.open()
         except SerialException:
-            print("SerialException from PySerial. Is the radio connected?")
+            print "SerialException from PySerial. Is the radio connected?"
         except:
-            print("Unknown error in SerialRadio initialization.")
+            print "Unknown error in SerialRadio initialization."
 
     # End reading from the serial port
     def endSerialRead(self):
         try:
             self.ser.close()
             self.ready = False
-        except: 
-            print("Unknown error while trying to close port.")
+        except:
+            print "Unknown error while trying to close port."
 
     # Returns True if ready and False otherwise
     def isReady(self):
@@ -65,7 +68,7 @@ class SerialRadio(object):
     def getAccel(self):
         return None
 
-    def getOrientation(self): 
+    def getOrientation(self):
         return None
 
 
@@ -76,6 +79,5 @@ def unitTests():
 
 # TODO: Add more commandline testing options as needed
 if __name__ == "__main__":
-    import sys # For commandline options
+    import sys  # For commandline options
     unitTests()
-
