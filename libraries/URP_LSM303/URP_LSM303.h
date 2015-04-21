@@ -144,7 +144,7 @@ class URP_LSM303_Accel : public Adafruit_Sensor
     URP_LSM303_Accel(int32_t sensorID = -1);
   
     bool begin(void);
-    void getEvent(sensors_event_t*);
+    bool getEvent(sensors_event_t*);
     void getSensor(sensor_t*);
     
     void setDataRate(byte rate);
@@ -168,7 +168,7 @@ class Adafruit_LSM303_Mag_Unified : public Adafruit_Sensor
     bool begin(void);
     void enableAutoRange(bool enable);
     void setMagGain(lsm303MagGain gain);
-    void getEvent(sensors_event_t*);
+    bool getEvent(sensors_event_t*);
     void getSensor(sensor_t*);
 
   private:
