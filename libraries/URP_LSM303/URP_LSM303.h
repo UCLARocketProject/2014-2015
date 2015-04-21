@@ -70,7 +70,7 @@
     
     typedef enum
     {
-    	LSM303_DATA_RATE_400HZ = 0b0111,
+    	LSM303_ACCEL_DATA_RATE_400HZ = 0b0111,
 	}lsm303AccelDataRates_t;
     
     typedef enum
@@ -91,6 +91,12 @@
       LSM303_REGISTER_MAG_TEMP_OUT_H_M          = 0x31,
       LSM303_REGISTER_MAG_TEMP_OUT_L_M          = 0x32
     } lsm303MagRegisters_t;
+	
+	typedef enum
+	{
+		//220hz
+		LSM303_MAG_DATA_RATE_220HZ = 0b111,
+	}lsm303MagDataRates_t;
 /*=========================================================================*/
 
 /*=========================================================================
@@ -160,17 +166,18 @@ class URP_LSM303_Accel : public Adafruit_Sensor
 };
 
 /* Unified sensor driver for the magnetometer */
-class Adafruit_LSM303_Mag_Unified : public Adafruit_Sensor
+class URP_LSM303_Mag : public Adafruit_Sensor
 {
   public:
-    Adafruit_LSM303_Mag_Unified(int32_t sensorID = -1);
+    URP_LSM303_Mag(int32_t sensorID = -1);
   
     bool begin(void);
     void enableAutoRange(bool enable);
     void setMagGain(lsm303MagGain gain);
     bool getEvent(sensors_event_t*);
     void getSensor(sensor_t*);
-
+	void setDataRate(byte rate);
+	byte getDataRate();
   private:
     lsm303MagGain   _magGain;
     lsm303MagData   _magData;     // Last read magnetometer data will be available here

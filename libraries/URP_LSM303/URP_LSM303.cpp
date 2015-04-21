@@ -219,6 +219,18 @@ byte URP_LSM303_Accel::getDataRate() {
 	return (read8((byte)LSM303_ADDRESS_ACCEL, (byte)LSM303_REGISTER_ACCEL_CTRL_REG1_A));
 }
 
+void URP_LSM303_Mag::setDataRate(byte rate) {
+	byte cra_reg_m = read8((byte)LSM303_ADDRESS_MAG, (byte)LSM303_REGISTER_MAG_CRA_REG_M);
+	cra_reg_m = (cra_reg_m & 0b10000000) | (rate << 2); // set all but top bit to new rate. manufacturer specifies some must stay 0
+	write8((byte)LSM303_ADDRESS_MAG, (byte)LSM303_REGISTER_MAG_CRA_REG_M, cra_reg_m);
+}
+
+byte URP_LSM303_Mag::getDataRate() {
+	return (read8((byte)LSM303_ADDRESS_MAG, (byte)LSM303_REGISTER_MAG_CRA_REG_M));
+}
+
+
+
 /***************************************************************************
  MAGNETOMETER
  ***************************************************************************/
@@ -231,7 +243,7 @@ byte URP_LSM303_Accel::getDataRate() {
     @brief  Abstract away platform differences in Arduino wire library
 */
 /**************************************************************************/
-void Adafruit_LSM303_Mag_Unified::write8(byte address, byte reg, byte value)
+void URP_LSM303_Mag::write8(byte address, byte reg, byte value)
 {
   Wire.beginTransmission(address);
   #if ARDUINO >= 100
@@ -249,7 +261,7 @@ void Adafruit_LSM303_Mag_Unified::write8(byte address, byte reg, byte value)
     @brief  Abstract away platform differences in Arduino wire library
 */
 /**************************************************************************/
-byte Adafruit_LSM303_Mag_Unified::read8(byte address, byte reg)
+byte URP_LSM303_Mag::read8(byte address, byte reg)
 {
   byte value;
 
@@ -276,7 +288,7 @@ byte Adafruit_LSM303_Mag_Unified::read8(byte address, byte reg)
     @brief  Reads the raw data from the sensor
 */
 /**************************************************************************/
-void Adafruit_LSM303_Mag_Unified::read()
+void URP_LSM303_Mag::read()
 {
   // Read the magnetometer
   Wire.beginTransmission((byte)LSM303_ADDRESS_MAG);
@@ -326,7 +338,7 @@ void Adafruit_LSM303_Mag_Unified::read()
     @brief  Instantiates a new Adafruit_LSM303 class
 */
 /**************************************************************************/
-Adafruit_LSM303_Mag_Unified::Adafruit_LSM303_Mag_Unified(int32_t sensorID) {
+URP_LSM303_Mag::URP_LSM303_Mag(int32_t sensorID) {
   _sensorID = sensorID;
   _autoRangeEnabled = false;
 }
@@ -340,7 +352,7 @@ Adafruit_LSM303_Mag_Unified::Adafruit_LSM303_Mag_Unified(int32_t sensorID) {
     @brief  Setups the HW
 */
 /**************************************************************************/
-bool Adafruit_LSM303_Mag_Unified::begin()
+bool URP_LSM303_Mag::begin()
 {
   // Enable I2C
   Wire.begin();
@@ -367,7 +379,7 @@ bool Adafruit_LSM303_Mag_Unified::begin()
     @brief  Enables or disables auto-ranging
 */
 /**************************************************************************/
-void Adafruit_LSM303_Mag_Unified::enableAutoRange(bool enabled)
+void URP_LSM303_Mag::enableAutoRange(bool enabled)
 {
   _autoRangeEnabled = enabled;
 }
@@ -377,7 +389,7 @@ void Adafruit_LSM303_Mag_Unified::enableAutoRange(bool enabled)
     @brief  Sets the magnetometer's gain
 */
 /**************************************************************************/
-void Adafruit_LSM303_Mag_Unified::setMagGain(lsm303MagGain gain)
+void URP_LSM303_Mag::setMagGain(lsm303MagGain gain)
 {
   write8(LSM303_ADDRESS_MAG, LSM303_REGISTER_MAG_CRB_REG_M, (byte)gain);
   
@@ -421,7 +433,7 @@ void Adafruit_LSM303_Mag_Unified::setMagGain(lsm303MagGain gain)
     @brief  Gets the most recent sensor event
 */
 /**************************************************************************/
-bool Adafruit_LSM303_Mag_Unified::getEvent(sensors_event_t *event) {
+bool URP_LSM303_Mag::getEvent(sensors_event_t *event) {
   bool readingValid = false;
   
   /* Clear the event */
@@ -508,7 +520,7 @@ bool Adafruit_LSM303_Mag_Unified::getEvent(sensors_event_t *event) {
     @brief  Gets the sensor_t data
 */
 /**************************************************************************/
-void Adafruit_LSM303_Mag_Unified::getSensor(sensor_t *sensor) {
+void URP_LSM303_Mag::getSensor(sensor_t *sensor) {
   /* Clear the sensor_t object */
   memset(sensor, 0, sizeof(sensor_t));
 
