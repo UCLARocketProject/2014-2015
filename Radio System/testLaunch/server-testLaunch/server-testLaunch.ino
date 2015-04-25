@@ -19,7 +19,10 @@ void setup()
 
     // Defaults after init are 434.0MHz, 0.05MHz AFC pull-in, modulation FSK_Rb2_4Fd36
     if (!rf22.init())
-        Serial.println("RFM22B server initialization failed");  
+        Serial.println("RFM22B server initialization failed"); 
+      
+    // TODO: Debug-only
+    Serial.println("Max message length: %d", rf22.maxMessageLength());
 }
 
 void loop()
@@ -38,7 +41,7 @@ void loop()
             //      Serial.println(rf22.lastRssi(), DEC);
 
             // Send a reply
-            uint8_t ack[] = "Acknowledgement from server." 
+            uint8_t ack[] = "Acknowledgement from server.";`
             rf22.send(ack, sizeof(ack));
             rf22.waitPacketSent();
             Serial.println("Sent an acknowledgement");
