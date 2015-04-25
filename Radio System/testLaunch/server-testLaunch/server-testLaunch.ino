@@ -22,7 +22,8 @@ void setup()
         Serial.println("RFM22B server initialization failed"); 
       
     // TODO: Debug-only
-    Serial.println("Max message length: %d", rf22.maxMessageLength());
+    Serial.println("Max message length: ");
+    Serial.println(rf22.maxMessageLength());
 }
 
 void loop()
@@ -41,7 +42,7 @@ void loop()
             //      Serial.println(rf22.lastRssi(), DEC);
 
             // Send a reply
-            uint8_t ack[] = "Acknowledgement from server.";`
+            uint8_t ack[] = "Acknowledgement from server.";
             rf22.send(ack, sizeof(ack));
             rf22.waitPacketSent();
             Serial.println("Sent an acknowledgement");
@@ -52,4 +53,3 @@ void loop()
         }
     }
 }
-
