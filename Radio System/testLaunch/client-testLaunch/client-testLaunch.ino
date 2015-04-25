@@ -4,7 +4,7 @@
 // 24 April 2015
 
 // Original example sketch: rf22_client.pde
-// From http://www.airspayce.com/mikem/arduino/RadioHead/nrf24_client_8pde-example.html
+// From http://www.airspayce.com/mikem/arduino/RadioHead/rf22_client_8pde-example.html
 // mode: C++
 
 #include <SPI.h>
