@@ -36,6 +36,8 @@
 *.toc
 *.gpg
 *.dSYM*
+*.sublime-workspace
+*.sublime-project
 
 # Packages #
 ############

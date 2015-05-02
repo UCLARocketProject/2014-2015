@@ -6,7 +6,7 @@
 //
 // Author: Mike McCauley (mikem@airspayce.com)
 // Copyright (C) 2014 Mike McCauley
-// $Id: RH_RF95.h,v 1.5 2014/09/17 22:41:47 mikem Exp $
+// $Id: RH_RF95.h,v 1.6 2015/01/02 21:38:24 mikem Exp $
 // 
 
 #ifndef RH_RF95_h
@@ -576,6 +576,10 @@ private:
 
     /// The configured interrupt pin connected to this instance
     uint8_t             _interruptPin;
+
+    /// The index into _deviceForInterrupt[] for this device (if an interrupt is already allocated)
+    /// else 0xff
+    uint8_t             _myInterruptIndex;
 
     /// Number of octets in the buffer
     volatile uint8_t    _bufLen;

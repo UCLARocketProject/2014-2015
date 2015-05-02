@@ -30,12 +30,13 @@ void loop()
     rf22.send(msg, sizeof(msg));
 
     rf22.waitPacketSent();
+    Serial.println("Message sent!");
 
     // Now wait for a reply
     uint8_t buf[RH_RF22_MAX_MESSAGE_LEN];
     uint8_t len = sizeof(buf);
 
-    if (rf22.waitAvailableTimeout(500))
+    if (rf22.waitAvailableTimeout(1))
     { 
         // There should be a reply message for us now   
         if (rf22.recv(buf, &len))
@@ -52,5 +53,5 @@ void loop()
     {
         Serial.println("No reply, is rf22_server running?");
     }
-    delay(400);
+    delay(2);
 }

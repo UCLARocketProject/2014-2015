@@ -1,7 +1,7 @@
 // RH_RF69.h
 // Author: Mike McCauley (mikem@airspayce.com)
 // Copyright (C) 2014 Mike McCauley
-// $Id: RH_RF69.h,v 1.27 2014/09/17 22:41:47 mikem Exp $
+// $Id: RH_RF69.h,v 1.28 2015/01/02 21:38:24 mikem Exp $
 //
 ///
 
@@ -811,6 +811,10 @@ protected:
 
     /// The configured interrupt pin connected to this instance
     uint8_t             _interruptPin;
+
+    /// The index into _deviceForInterrupt[] for this device (if an interrupt is already allocated)
+    /// else 0xff
+    uint8_t             _myInterruptIndex;
 
     /// The radio OP mode to use when mode is RHModeIdle
     uint8_t             _idleMode; 
