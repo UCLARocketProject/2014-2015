@@ -22,7 +22,7 @@ void setup()
         Serial.println("RFM22B server initialization failed"); 
       
     // TODO: Debug-only
-    Serial.println("Max message length: %d", rf22.maxMessageLength());
+    // Serial.println("Max message length: %d", rf22.maxMessageLength());
 }
 
 void loop()
@@ -35,6 +35,7 @@ void loop()
         if (rf22.recv(buf, &len))
         {
             //      RF22::printBuffer("request: ", buf, len);
+            // TODO: Hand data off to processing after receipt
             Serial.print("Got message from client: ");
             Serial.println((char*)buf);
             //      Serial.print("RSSI: ");

@@ -1,9 +1,9 @@
 #include <SD.h>
 #include <SPI.h>
 
-// This must be less than 8 characters (9 bytes)
-// Extra byte for being such a good programmer
-const int fileNameSize = 10;
+// This must be less than 8 characters (9 bytes
+// including the null byte)
+const int fileNameSize = 9;
 char strFileName[fileNameSize];
 
 void setup() {

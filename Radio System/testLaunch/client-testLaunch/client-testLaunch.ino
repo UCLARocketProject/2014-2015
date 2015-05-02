@@ -18,8 +18,9 @@ void setup()
     Serial.begin(9600);
 
     // Defaults after init are 434.0MHz, 0.05MHz AFC pull-in, modulation FSK_Rb2_4Fd36
-    if (!rf22.init())
+    if (!rf22.init()) {
         Serial.println("RFM22B client initialization failed");
+    }
 }
 
 void loop()
@@ -36,7 +37,7 @@ void loop()
     uint8_t buf[RH_RF22_MAX_MESSAGE_LEN];
     uint8_t len = sizeof(buf);
 
-    if (rf22.waitAvailableTimeout(1))
+    if (rf22.waitAvailableTimeout(2))
     { 
         // There should be a reply message for us now   
         if (rf22.recv(buf, &len))
@@ -53,5 +54,7 @@ void loop()
     {
         Serial.println("No reply, is rf22_server running?");
     }
+
+    // Avoid overwhelming server with messages
     delay(2);
 }

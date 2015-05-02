@@ -18,12 +18,13 @@ void setup()
     Serial.begin(9600);
 
     // Defaults after init are 434.0MHz, 0.05MHz AFC pull-in, modulation FSK_Rb2_4Fd36
-    if (!rf22.init())
+    if (!rf22.init()) {
         Serial.println("RFM22B server initialization failed"); 
+    }
       
     // TODO: Debug-only
-    Serial.println("Max message length: ");
-    Serial.println(rf22.maxMessageLength());
+    // Serial.println("Max message length: ");
+    // Serial.println(rf22.maxMessageLength());
 }
 
 void loop()
