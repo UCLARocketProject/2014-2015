@@ -1,7 +1,8 @@
 // RFM22B Client 
 // UCLA Rocket Project, 2014-2015
 // By: Ky-Cuong L. Huynh
-// 24 April 2015
+// Created: 24 April 2015
+// Updated: 1 May 2015
 
 // Original example sketch: rf22_client.pde
 // From http://www.airspayce.com/mikem/arduino/RadioHead/rf22_client_8pde-example.html
