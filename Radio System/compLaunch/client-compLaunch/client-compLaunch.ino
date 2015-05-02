@@ -26,17 +26,17 @@ RH_RF22 rf22;
 Adafruit_10DOF    dof   = Adafruit_10DOF();
 URP_LSM303_Accel  accel = URP_LSM303_Accel(30301);
 
+// Hold sensor events
+sensors_event_t accel_event;
+sensors_vec_t   orientation;
+char dataBuffer[RH_RF22_MAX_MESSAGE_LEN];
+
 // This must be less than 8 characters (9 bytes
 // including the null byte)
 const int fileNameSize = 9;
 char strFileName[fileNameSize];
 
-// Hold acceleration and orientation events
-sensors_event_t accel_event;
-sensors_vec_t   orientation;
 
-// Data buffer for the accel and orientation readings
-char dataArray[80];
 
 void setup() 
 {
@@ -52,6 +52,10 @@ void setup()
     // 0.05MHz AFC pull-in, modulation FSK_Rb2_4Fd36
     if (!rf22.init()) {
         Serial.println("RFM22B client initialization failed");
+    }
+
+    if (!accel.begin()) {
+        // TODO: Handle accelerometer failure
     }
 
     // TODO: Add barometer and temperature sensors
@@ -76,10 +80,30 @@ void setup()
 
 void loop()
 {
+    // Calculate pitch and roll from the raw accelerometer data 
+    accel.getEvent(&accel_event);
+    if (dof.accelGetOrientation(&accel_event, &orientation))
+    {
+        // TODO: Check that this message length 
+        // won't be too long for data buffer
+        sprintf(dataBuffer, "%f, %f, %f, %f, %f, %f", 
+            accel_event.acceleration.x, 
+            accel_event.acceleration.y, 
+            accel_event.acceleration.z, 
+            orientation.roll, 
+            orientation.pitch, 
+            orientation.heading
+        );
+
+        sdWrite(dataBuffer);
+        sdWriteNewline();
+    }
+    else {
+        sprintf(dataBuffer, "Failed to get accelerometer data.");
+    }
     // Debug: Serial.println("Sending message to rf22_server");
     // Send a message to rf22_server
-    uint8_t msg[] = "Hello World!";
-    rf22.send(msg, sizeof(msg));
+    rf22.send(dataBuffer, sizeof(dataBuffer));
 
     rf22.waitPacketSent();
 
@@ -161,35 +185,37 @@ bool sdWrite(char* strFileName, String data) {
         dataFile.close();
     }
 }
-char* floatToString(char * outstr, double val, byte precision, byte widthp){
-    char temp[16]; //increase this if you need more digits than 15
+char* floatToString(char * outstr, double val, byte precision, byte widthp) {
+    // Limit on digit precision. Increase this
+    // for more than 15 digits
+    char temp[16]; 
     byte i;
 
-    temp[0]='\0';
-    outstr[0]='\0';
+    temp[0] = '\0';
+    outstr[0] = '\0';
 
     if (val < 0.0) {
-        strcpy(outstr,"-\0");  //print "-" sign
+        strcpy(outstr, "-\0");  //print "-" sign
         val *= -1;
     }
 
-    // Print the int part
+    // Print the integer component
     if (precision == 0) {
         strcat(outstr, ltoa(round(val), temp, 10));  
     }
     else {
         unsigned long frac, mult = 1;
-        byte padding = precision-1;
+        byte padding = precision - 1;
 
         while (precision--) {
             mult *= 10;
         }
 
         // Compute rounding factor
-        val += 0.5 / (float)mult;      
+        val += (0.5 / (float)mult);      
 
-        // Print the integer part without rounding
-        strcat(outstr, ltoa(floor(val),temp,10));  
+        // Print the integer component without rounding
+        strcat(outstr, ltoa(floor(val), temp, 10));  
         strcat(outstr, ".\0"); // print the decimal point
 
         frac = (val - floor(val)) * mult;
@@ -201,10 +227,12 @@ char* floatToString(char * outstr, double val, byte precision, byte widthp){
         }
 
         while (padding--) {
-            strcat(outstr,"0\0");    // print padding zeros
+            // Print padding zeros
+            strcat(outstr, "0\0");    
         }
 
-        strcat(outstr,ltoa(frac,temp,10));  // print fraction part
+        // Print fractional componecnt
+        strcat(outstr, ltoa(frac, temp, 10));  
     }
 
     // Generate width space padding 
