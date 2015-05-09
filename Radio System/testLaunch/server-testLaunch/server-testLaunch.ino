@@ -17,23 +17,27 @@ void setup()
 {
     Serial.begin(9600);
 
+    delay(1000);
+
     // Defaults after init are 434.0MHz, 0.05MHz AFC pull-in, modulation FSK_Rb2_4Fd36
     if (!rf22.init()) {
         Serial.println("RFM22B server initialization failed"); 
     }
       
     // TODO: Debug-only
-    // Serial.println("Max message length: ");
-    // Serial.println(rf22.maxMessageLength());
+    Serial.println("Max message length: ");
+    Serial.println(rf22.maxMessageLength());
 }
 
 void loop()
 {
+    // Serial.println("In main loop");
     if (rf22.available())
     {
         // There should be a message for us now   
         uint8_t buf[RH_RF22_MAX_MESSAGE_LEN];
         uint8_t len = sizeof(buf);
+        Serial.println("Message available");
         if (rf22.recv(buf, &len))
         {
             //      RF22::printBuffer("request: ", buf, len);
@@ -52,5 +56,9 @@ void loop()
         {
             Serial.println("Receive message from client failed");
         }
+    }
+    else 
+    {
+      Serial.println("Message not available.");
     }
 }
