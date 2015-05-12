@@ -1,6 +1,5 @@
 /*
 *  Accelerometer skeleton code
-*
 */
 #include <SD.h>
 #include <SPI.h>
