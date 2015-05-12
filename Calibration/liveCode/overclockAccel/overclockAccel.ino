@@ -20,6 +20,7 @@ sensors_event_t accel_event;
 sensors_vec_t   orientation;
 //data buffer for the accel and orientation readings
 char dataArray[80];
+
 void initAccel()
 {
   if(!accel.begin())
@@ -38,7 +39,7 @@ void setup(void)
 {
   //this is needed for the duemilanove and uno without ethernet shield
   const int sdCardPin = 10;
-  delay(1000);    
+  delay(2000);
   pinMode(10,OUTPUT);
   if (!SD.begin(sdCardPin)) {
     // don't do anything more:
@@ -65,8 +66,12 @@ void loop(void)
   accel.getEvent(&accel_event);
   if (dof.accelGetOrientation(&accel_event, &orientation))
   {
-    sprintf(dataArray, "%f, %f, %f, %f, %f, %f", accel_event.acceleration.x, accel_event.acceleration.y, accel_event.acceleration.z, orientation.roll, orientation.pitch, orientation.heading);
-    sdWrite(dataArray);
+    sdWrite((String)accel_event.acceleration.x);
+    sdWrite((String)accel_event.acceleration.y);
+    sdWrite((String)accel_event.acceleration.z);
+    sdWrite((String)accel_event.orientation.roll);
+    sdWrite((String)accel_event.orientation.pitch);
+    sdWrite((String) accel_event.orientation.heading);
     sdWriteNewline();
   }
 }
@@ -89,6 +94,7 @@ bool sdWrite(String data) {
   // if the file is available, write to it:
   if (dataFile) {
     dataFile.print(data);
+    dataFile.print(", ");i
     dataFile.close();
     // print to the serial port too:
   }
