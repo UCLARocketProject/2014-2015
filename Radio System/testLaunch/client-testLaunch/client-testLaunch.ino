@@ -18,10 +18,14 @@ void setup()
 {
     Serial.begin(9600);
 
+    delay(1000);
+
     // Defaults after init are 434.0MHz, 0.05MHz AFC pull-in, modulation FSK_Rb2_4Fd36
     if (!rf22.init()) {
         Serial.println("RFM22B client initialization failed");
     }
+    
+    Serial.println("Client initialization successful.");
 }
 
 void loop()
