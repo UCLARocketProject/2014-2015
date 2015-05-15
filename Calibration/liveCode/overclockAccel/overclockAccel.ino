@@ -18,7 +18,8 @@ const char* FILENAME = "run2-26.txt";
 sensors_event_t accel_event;
 sensors_vec_t   orientation;
 //data buffer for the accel and orientation readings
-char dataArray[80];
+//char dataArray[80];
+String dataString;
 
 void initAccel()
 {
@@ -65,13 +66,9 @@ void loop(void)
   accel.getEvent(&accel_event);
   if (dof.accelGetOrientation(&accel_event, &orientation))
   {
-    sdWrite((String)accel_event.acceleration.x);
-    sdWrite((String)accel_event.acceleration.y);
-    sdWrite((String)accel_event.acceleration.z);
-    sdWrite((String)accel_event.orientation.roll);
-    sdWrite((String)accel_event.orientation.pitch);
-    sdWrite((String) accel_event.orientation.heading);
-    sdWriteNewline();
+    dataString = ((String) accel_event.acceleration.x) + ((String)accel_event.acceleration.y) + ((String)accel_event.acceleration.z)
+      + ((String)accel_event.orientation.roll) + ((String)accel_event.orientation.pitch) + ((String) accel_event.orientation.heading) + millis() + '\n';
+    sdWrite(dataString);
   }
 }
 bool sdWriteNewline() {
@@ -93,7 +90,7 @@ bool sdWrite(String data) {
   // if the file is available, write to it:
   if (dataFile) {
     dataFile.print(data);
-    dataFile.print(", ");i
+    dataFile.print(", ");
     dataFile.close();
     // print to the serial port too:
   }
