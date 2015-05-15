@@ -14,7 +14,7 @@
 /* Assign a unique ID to the sensors */
 Adafruit_10DOF                dof   = Adafruit_10DOF();
 URP_LSM303_Accel accel = URP_LSM303_Accel(30301);
-const char* FILENAME = "run2-26.txt";
+const char* FILENAME = "tlaunch.txt";
 sensors_event_t accel_event;
 sensors_vec_t   orientation;
 //data buffer for the accel and orientation readings
