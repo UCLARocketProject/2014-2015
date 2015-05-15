@@ -18,7 +18,7 @@ const char* FILENAME = "tlaunch.txt";
 sensors_event_t accel_event;
 sensors_vec_t   orientation;
 //data buffer for the accel and orientation readings
-String dataString;
+char dataString[60];
 
 void initAccel()
 {
@@ -65,9 +65,12 @@ void loop(void)
   accel.getEvent(&accel_event);
   if (dof.accelGetOrientation(&accel_event, &orientation))
   {
-    dataString = ((String) accel_event.acceleration.x) + ((String)accel_event.acceleration.y) + ((String)accel_event.acceleration.z)
-      + ((String)accel_event.orientation.roll) + ((String)accel_event.orientation.pitch) + ((String) accel_event.orientation.heading) + millis() + '\n';
-    sdWrite(dataString);
+    sdWrite((String) accel_event.acceleration.x);
+    sdWrite((String) accel_event.acceleration.y);
+    sdWrite((String) accel_event.acceleration.z);
+    sdWrite((String) accel_event.orientation.roll);
+    sdWrite((String) millis());
+    sdWriteNewline();
   }
 }
 bool sdWriteNewline() {
