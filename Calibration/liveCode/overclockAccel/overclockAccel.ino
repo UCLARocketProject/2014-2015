@@ -44,9 +44,10 @@ void setup(void)
     // don't do anything more:
     return;
   }
-  //format
-  sdWrite("AccelX, AccelY, AccelZ, Roll, Pitch, Heading");
-  sdWriteNewline();
+  File dataFile = SD.open(FILENAME, FILE_WRITE);
+  // if the file is available, write to it:
+  dataFile.println("Accel X, Accel Y, Accel Z, Yaw, timestamp");
+  dataFile.close();
   /* Initialise the sensors */
   initAccel();
   accel.setDataRate((byte)LSM303_ACCEL_DATA_RATE_400HZ);
@@ -65,25 +66,25 @@ void loop(void)
   accel.getEvent(&accel_event);
   if (dof.accelGetOrientation(&accel_event, &orientation))
   {
-    sdWrite((String) accel_event.acceleration.x);
-    sdWrite((String) accel_event.acceleration.y);
-    sdWrite((String) accel_event.acceleration.z);
-    sdWrite((String) accel_event.orientation.roll);
-    sdWrite((String) millis());
+    sdWrite(accel_event.acceleration.x);
+    sdWrite(accel_event.acceleration.y);
+    sdWrite(accel_event.acceleration.z);
+    sdWrite(accel_event.orientation.roll);
     sdWriteNewline();
   }
 }
 void sdWriteNewline() {
   File dataFile = SD.open(FILENAME, FILE_WRITE);
   // if the file is available, write to it:
-  dataFile.println("");
+  dataFile.println(millis());
   dataFile.close();
     // print to the serial port too:
 }
   
-void sdWrite(String data) {
+void sdWrite(float data) {
   File dataFile = SD.open(FILENAME, FILE_WRITE);
   // if the file is available, write to it:
-  dataFile.print(data + ", ");
+  dataFile.print(data);
+  dataFile.print(", ");
   dataFile.close();
 }
