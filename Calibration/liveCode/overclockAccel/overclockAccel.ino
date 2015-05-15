@@ -12,11 +12,12 @@
 #include <Adafruit_10DOF.h>
 
 /* Assign a unique ID to the sensors */
-Adafruit_10DOF                dof   = Adafruit_10DOF();
+Adafruit_10DOF dof   = Adafruit_10DOF();
 URP_LSM303_Accel accel = URP_LSM303_Accel(30301);
 const char* FILENAME = "tlaunch.txt";
 sensors_event_t accel_event;
 sensors_vec_t   orientation;
+File dataFile;
 //data buffer for the accel and orientation readings
 char dataString[60];
 
@@ -44,7 +45,7 @@ void setup(void)
     // don't do anything more:
     return;
   }
-  File dataFile = SD.open(FILENAME, FILE_WRITE);
+  dataFile = SD.open(FILENAME, FILE_WRITE);
   // if the file is available, write to it:
   dataFile.println("Accel X, Accel Y, Accel Z, Yaw, timestamp");
   dataFile.close();
@@ -55,36 +56,40 @@ void setup(void)
 
 }
 
-/**************************************************************************/
-/*!
-    @brief  Constantly check the roll/pitch/heading/altitude/temperature
-*/
-/**************************************************************************/
 void loop(void)
 {
   /* Calculate pitch and roll from the raw accelerometer data */
   accel.getEvent(&accel_event);
   if (dof.accelGetOrientation(&accel_event, &orientation))
   {
+    openSd();
     sdWrite(accel_event.acceleration.x);
     sdWrite(accel_event.acceleration.y);
     sdWrite(accel_event.acceleration.z);
     sdWrite(accel_event.orientation.roll);
     sdWriteNewline();
+    closeSd();
   }
 }
+//$dataFile is a global variable so you dont return anything
+void openSd() {
+  dataFile = SD.open(FILENAME, FILE_WRITE);
+}
+//$dataFile is a global
+void closeSd() {
+  dataFile.close();
+}
 void sdWriteNewline() {
-  File dataFile = SD.open(FILENAME, FILE_WRITE);
+  //File dataFile = SD.open(FILENAME, FILE_WRITE);
   // if the file is available, write to it:
   dataFile.println(millis());
-  dataFile.close();
-    // print to the serial port too:
+  //dataFile.close();
 }
   
 void sdWrite(float data) {
-  File dataFile = SD.open(FILENAME, FILE_WRITE);
+  //File dataFile = SD.open(FILENAME, FILE_WRITE);
   // if the file is available, write to it:
   dataFile.print(data);
   dataFile.print(", ");
-  dataFile.close();
+  //dataFile.close();
 }
