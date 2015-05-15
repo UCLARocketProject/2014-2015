@@ -18,7 +18,6 @@ const char* FILENAME = "run2-26.txt";
 sensors_event_t accel_event;
 sensors_vec_t   orientation;
 //data buffer for the accel and orientation readings
-//char dataArray[80];
 String dataString;
 
 void initAccel()
