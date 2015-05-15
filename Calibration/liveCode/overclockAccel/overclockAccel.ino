@@ -73,20 +73,14 @@ void loop(void)
     sdWriteNewline();
   }
 }
-bool sdWriteNewline() {
+void sdWriteNewline() {
   File dataFile = SD.open(FILENAME, FILE_WRITE);
   // if the file is available, write to it:
-  if (dataFile) {
-    dataFile.println("");
-    dataFile.close();
+  dataFile.println("");
+  dataFile.close();
     // print to the serial port too:
-  }
-  // if the file isn't open, pop up an error:
-  else {
-    dataFile.close();
-  }
 }
-
+  
 void sdWrite(String data) {
   File dataFile = SD.open(FILENAME, FILE_WRITE);
   // if the file is available, write to it:
