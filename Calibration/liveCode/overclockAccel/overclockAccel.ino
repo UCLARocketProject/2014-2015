@@ -12,18 +12,23 @@
 #include <Adafruit_10DOF.h>
 
 /* Assign a unique ID to the sensors */
-Adafruit_10DOF dof   = Adafruit_10DOF();
-URP_LSM303_Accel accel = URP_LSM303_Accel(30301);
+Adafruit_10DOF   dof();
+URP_LSM303_Accel accel(30301);
+URP_LSM303_Mag   mag(30302);
+Adafruit_Simple_AHRS ahrs(&accel, &mag);
+
+// Data buffer for the accel and orientation readings
+char dataString[60];
+File dataFile;
 const char* FILENAME = "tlaunch.txt";
 sensors_event_t accel_event;
-sensors_vec_t   orientation;
-File dataFile;
-//data buffer for the accel and orientation readings
-char dataString[60];
+sensors_vec_t orientation;
+
 int mainLoopCounter;
 void initAccel()
 {
-  if(!accel.begin())
+  // accel.begin() method includes code for G-force range increase
+  if (!accel.begin())
   {
     Serial.println("accel.begin error");
     /* There was a problem detecting the LSM303 ... check your connections */
@@ -38,29 +43,32 @@ void initAccel()
 /**************************************************************************/
 void setup(void)
 {
-  //this is needed for the duemilanove and uno without ethernet shield
+  // This is needed for the duemilanove and uno without ethernet shield
   const int sdCardPin = 10;
   delay(2000);
   pinMode(10,OUTPUT);
+
   if (!SD.begin(sdCardPin)) {
-    // don't do anything more:
+    // Don't do anything more:
     return;
   }
+
   initAccel();
   accel.setDataRate((byte)LSM303_ACCEL_DATA_RATE_400HZ);
-  accel.setDataRate((byte)LSM303_MAG_DATA_RATE_220HZ);
+  mag.setDataRate((byte)LSM303_MAG_DATA_RATE_220HZ);
   dataFile = SD.open(FILENAME, FILE_WRITE);
-  // if the file is available, write to it:
-  dataFile.println("Accel X, Accel Y, Accel Z, Yaw, timestamp");
+
+  // If the file is available, write to it:
+  dataFile.println("Accel X, Accel Y, Accel Z, Yaw, Timestamp");
   dataFile.close();
 }
 
 void loop(void)
 {
   openSd();
-  for(mainLoopCounter = 0; mainLoopCounter < 1000; mainLoopCounter++) {
+  for (mainLoopCounter = 0; mainLoopCounter < 1000; mainLoopCounter++) {
     accel.getEvent(&accel_event);
-    dof.accelGetOrientation(&accel_event, &orientation);
+    ahrs.getOrientation(&orientation);
     sdWrite(accel_event.acceleration.x);
     sdWrite(accel_event.acceleration.y);
     sdWrite(accel_event.acceleration.z);
@@ -69,25 +77,28 @@ void loop(void)
   }
   closeSd();
 }
-//$dataFile is a global variable so you dont return anything
+
+// $dataFile is a global variable so you dont return anything
 void openSd() {
   dataFile = SD.open(FILENAME, FILE_WRITE);
 }
-//$dataFile is a global
+
+// $dataFile is a global
 void closeSd() {
   dataFile.close();
 }
+
 void sdWriteNewline() {
-  //File dataFile = SD.open(FILENAME, FILE_WRITE);
+  // File dataFile = SD.open(FILENAME, FILE_WRITE);
   // if the file is available, write to it:
   dataFile.println(millis());
-  //dataFile.close();
+  // dataFile.close();
 }
   
 void sdWrite(float data) {
-  //File dataFile = SD.open(FILENAME, FILE_WRITE);
+  // File dataFile = SD.open(FILENAME, FILE_WRITE);
   // if the file is available, write to it:
   dataFile.print(data);
   dataFile.print(", ");
-  //dataFile.close();
+  // dataFile.close();
 }
