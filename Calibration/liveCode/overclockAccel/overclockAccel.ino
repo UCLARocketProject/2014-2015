@@ -10,6 +10,7 @@
 #include <String.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_10DOF.h>
+#include <Adafruit_Simple_AHRS.h>
 
 /* Assign a unique ID to the sensors */
 Adafruit_10DOF   dof();
@@ -59,7 +60,7 @@ void setup(void)
   dataFile = SD.open(FILENAME, FILE_WRITE);
 
   // If the file is available, write to it:
-  dataFile.println("Accel X, Accel Y, Accel Z, Yaw, Timestamp");
+  dataFile.println("Accel X, Accel Y, Accel Z, Roll, Timestamp");
   dataFile.close();
 }
 
@@ -72,7 +73,7 @@ void loop(void)
     sdWrite(accel_event.acceleration.x);
     sdWrite(accel_event.acceleration.y);
     sdWrite(accel_event.acceleration.z);
-    sdWrite(accel_event.orientation.roll);
+    sdWrite(orientation.roll);
     sdWriteNewline();  
   }
   closeSd();
