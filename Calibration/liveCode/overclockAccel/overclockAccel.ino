@@ -20,11 +20,12 @@ sensors_vec_t   orientation;
 File dataFile;
 //data buffer for the accel and orientation readings
 char dataString[60];
-
+int mainLoopCounter;
 void initAccel()
 {
   if(!accel.begin())
   {
+    Serial.println("accel.begin error");
     /* There was a problem detecting the LSM303 ... check your connections */
     while(1);
   }
@@ -45,31 +46,28 @@ void setup(void)
     // don't do anything more:
     return;
   }
+  initAccel();
+  accel.setDataRate((byte)LSM303_ACCEL_DATA_RATE_400HZ);
+  accel.setDataRate((byte)LSM303_MAG_DATA_RATE_220HZ);
   dataFile = SD.open(FILENAME, FILE_WRITE);
   // if the file is available, write to it:
   dataFile.println("Accel X, Accel Y, Accel Z, Yaw, timestamp");
   dataFile.close();
-  /* Initialise the sensors */
-  initAccel();
-  accel.setDataRate((byte)LSM303_ACCEL_DATA_RATE_400HZ);
-  accel.setDataRate((byte)LSM303_MAG_DATA_RATE_220HZ);
-
 }
 
 void loop(void)
 {
-  /* Calculate pitch and roll from the raw accelerometer data */
-  accel.getEvent(&accel_event);
-  if (dof.accelGetOrientation(&accel_event, &orientation))
-  {
-    openSd();
+  openSd();
+  for(mainLoopCounter = 0; mainLoopCounter < 1000; mainLoopCounter++) {
+    accel.getEvent(&accel_event);
+    dof.accelGetOrientation(&accel_event, &orientation);
     sdWrite(accel_event.acceleration.x);
     sdWrite(accel_event.acceleration.y);
     sdWrite(accel_event.acceleration.z);
     sdWrite(accel_event.orientation.roll);
-    sdWriteNewline();
-    closeSd();
+    sdWriteNewline();  
   }
+  closeSd();
 }
 //$dataFile is a global variable so you dont return anything
 void openSd() {
