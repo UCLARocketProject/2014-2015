@@ -150,7 +150,8 @@ bool URP_LSM303_Accel::begin()
 
   // Enable the accelerometer (100Hz)
   write8(LSM303_ADDRESS_ACCEL, LSM303_REGISTER_ACCEL_CTRL_REG1_A, 0x57);
-  
+  //by default read +-16g's and set to high resolution
+  setAccelToMax();  
   // LSM303DLHC has no WHOAMI register so read CTRL_REG1_A back to check
   // if we are connected or not
   uint8_t reg1_a = read8(LSM303_ADDRESS_ACCEL, LSM303_REGISTER_ACCEL_CTRL_REG1_A);
@@ -218,6 +219,12 @@ void URP_LSM303_Accel::setDataRate(byte rate) {
 byte URP_LSM303_Accel::getDataRate() {
 	return (read8((byte)LSM303_ADDRESS_ACCEL, (byte)LSM303_REGISTER_ACCEL_CTRL_REG1_A));
 }
+void URP_LSM303_Accel::setAccelToMax() {
+	byte reg4_a = read8((byte)LSM303_ADDRESS_ACCEL, (byte)LSM303_REGISTER_ACCEL_CTRL_REG4_A);
+	reg4_a = 0b00111001; // bitrate to high resolution and +-16g's 
+	write8((byte)LSM303_ADDRESS_ACCEL, (byte)LSM303_REGISTER_ACCEL_CTRL_REG4_A, reg4_a);
+}
+
 
 void URP_LSM303_Mag::setDataRate(byte rate) {
 	byte cra_reg_m = read8((byte)LSM303_ADDRESS_MAG, (byte)LSM303_REGISTER_MAG_CRA_REG_M);

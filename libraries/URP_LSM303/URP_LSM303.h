@@ -155,6 +155,9 @@ class URP_LSM303_Accel : public Adafruit_Sensor
     
     void setDataRate(byte rate);
     byte getDataRate();
+	//sets the accelerometer to read +- 16G
+	void setAccelToMax();
+	byte getAccelMax();
     
   private:
     lsm303AccelData _accelData;   // Last read accelerometer data will be available here
