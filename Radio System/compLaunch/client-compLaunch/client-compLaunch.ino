@@ -26,8 +26,10 @@
 RH_RF22 rf22;
 
 /* Assign a unique ID to the sensors */
-Adafruit_10DOF    dof   = Adafruit_10DOF();
-URP_LSM303_Accel  accel = URP_LSM303_Accel(30301);
+Adafruit_10DOF   dof();
+URP_LSM303_Accel accel(30301);
+URP_LSM303_Mag   mag(30302);
+Adafruit_Simple_AHRS ahrs(&accel, &mag);
 
 // Hold sensor events
 sensors_event_t accel_event;
@@ -38,16 +40,17 @@ char dataBuffer[RH_RF22_MAX_MESSAGE_LEN];
 // including the null byte)
 const int fileNameSize = 9;
 char strFileName[fileNameSize];
+File dataFile;
 
 void initAccel()
 {
-  // accel.begin() method includes code for G-force range increase
-  if (!accel.begin())
-  {
-    Serial.println("accel.begin error");
-    /* There was a problem detecting the LSM303 ... check your connections */
-    while(1);
-  }
+    // accel.begin() method includes code for G-force range increase
+    if (!accel.begin())
+    {
+        Serial.println("accel.begin error");
+        /* There was a problem detecting the LSM303 ... check your connections */
+        while(1);
+    }
 }
 
 void setup() 
@@ -69,50 +72,56 @@ void setup()
     if (!accel.begin()) {
         // TODO: Handle accelerometer failure
     }
-
-    // TODO: Add barometer and temperature sensors
-    // Initialize the sensors
-    initAccel();
-    accel.setDataRate((byte)LSM303_ACCEL_DATA_RATE_400HZ);
-    accel.setDataRate((byte)LSM303_MAG_DATA_RATE_220HZ);
-
-    // TODO: How should we handle SD card failure?
+     // TODO: How should we handle SD card failure?
     //if (!SD.begin(sdCardPin)) {
     //     // don't do anything more:
     //     return;
     // }
+    // TODO: Add barometer and temperature sensors
+    // Initialize the sensors
+
+    initAccel();
+    accel.setDataRate((byte)LSM303_ACCEL_DATA_RATE_400HZ);
+    accel.setDataRate((byte)LSM303_MAG_DATA_RATE_220HZ);
 
     getNewFileName();
-    // Format of data from DOF
-    sdWrite(strFileName, "AccelX, AccelY, AccelZ, Roll, Pitch, Heading");
-    sdWriteNewline(strFileName);
 
-    
+    // Format of data from DOF
+    // Need to write this manually, as it's a string
+    dataFile = SD.open(strFileName, FILE_WRITE);
+    dataFile.println("AccelX, AccelY, AccelZ, Roll, Pitch, Heading");
+    sdWriteNewline();
+    dataFile.close();
 }
 
 void loop()
 {
-    // Calculate pitch and roll from the raw accelerometer data 
-    accel.getEvent(&accel_event);
-    if (dof.accelGetOrientation(&accel_event, &orientation))
-    {
-        // TODO: Check that this message length 
-        // won't be too long for data buffer
+    openSd();
+    int mainLoopCounter;
+    for (mainLoopCounter = 0; mainLoopCounter < 1000; mainLoopCounter++) {
+        accel.getEvent(&accel_event);
+        ahrs.getOrientation(&orientation);
+
+        sdWrite(accel_event.acceleration.x);
+        sdWrite(accel_event.acceleration.y);
+        sdWrite(accel_event.acceleration.z);
+        sdWrite(orientation.roll);
+        sdWrite(orientation.pitch);
+        sdWrite(orientation.heading);
+        sdWriteNewline();  
+
         sprintf(dataBuffer, "%f, %f, %f, %f, %f, %f", 
             accel_event.acceleration.x, 
             accel_event.acceleration.y, 
-            accel_event.acceleration.z, 
+            accel_event.acceleration.z,
             orientation.roll, 
             orientation.pitch, 
             orientation.heading
-        );
+           );
 
-        sdWrite(strFileName, dataBuffer);
-        sdWriteNewline(strFileName);
+        closeSd();
     }
-    else {
-        sprintf(dataBuffer, "Failed to get accelerometer data.");
-    }
+
     // Debug: Serial.println("Sending message to rf22_server");
     // Send a message to rf22_server
     rf22.send((const uint8_t*)dataBuffer, sizeof(dataBuffer));
@@ -147,55 +156,48 @@ void loop()
 }
 
 /*
-Gives a new filename so we can open a new file each time
-Returns no failure code. If we write enough files, 
-the length will eventually overflow, and we'll 
-default to nameOF.txt in that case
-*/
+   Gives a new filename so we can open a new file each time
+   Returns no failure code. If we write enough files, 
+   the length will eventually overflow, and we'll 
+   default to nameOF.txt in that case
+ */
 void getNewFileName() {
-  // Debug: Serial.println("started to get filename");
-  strncpy(strFileName, "run0.txt", fileNameSize);
-  int nameSize = 0;
-  for(int i = 0; SD.exists(strFileName); nameSize = sprintf(strFileName, "run%d.txt", i)) {
-    // Catch potential overflow with the name size then we have an issue.
-    // so we write to the file "runOF.txt"
-    // Debug: Serial.print("Checking filename ");
-    // Debug: Serial.println(strFileName);
-    if (nameSize > 12) {
-      strncpy(strFileName, "runOF.txt", fileNameSize);
-      return;
+    // Debug: Serial.println("started to get filename");
+    strncpy(strFileName, "run0.txt", fileNameSize);
+    int nameSize = 0;
+    for(int i = 0; SD.exists(strFileName); nameSize = sprintf(strFileName, "run%d.txt", i)) {
+        // Catch potential overflow with the name size then we have an issue.
+        // so we write to the file "runOF.txt"
+        // Debug: Serial.print("Checking filename ");
+        // Debug: Serial.println(strFileName);
+        if (nameSize > 12) {
+            strncpy(strFileName, "runOF.txt", fileNameSize);
+            return;
+        }
+        i++;
     }
-    i++;
-  }
-  // Debug: Serial.println("Got filename");
-  return;
+    // Debug: Serial.println("Got filename");
+    return;
 }
 
 // Write a newline '\n' to the log file
-bool sdWriteNewline(char* strFileName) {
-    File dataFile = SD.open(strFileName, FILE_WRITE);
-    // If the file is available, write to it, 
-    if (dataFile) {
-        dataFile.println(millis());
-        dataFile.println("");
-        dataFile.close();
-    }
-    // If the file isn't open, try closing it
-    else {
-        dataFile.close();
-    }
+bool sdWriteNewline() {
+    dataFile.println(millis());
 }
 
-bool sdWrite(char* strFileName, String data) {
-    File dataFile = SD.open(strFileName, FILE_WRITE);
-    // If the file is available, write to it:
-    if (dataFile) {
-        dataFile.print(data);
-        dataFile.close();
-    }
-    // If the file isn't open, try closing it
-    else {
-        dataFile.close();
-    }
+bool sdWrite(float data) {
+    dataFile.print(data);
+    dataFile.print(", ");
 }
+
+// $dataFile is a global variable so you dont return anything
+void openSd() {
+    dataFile = SD.open(strFileName, FILE_WRITE);
+}
+
+// $dataFile is a global
+void closeSd() {
+    dataFile.close();
+}
+
 
