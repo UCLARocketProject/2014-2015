@@ -20,6 +20,7 @@
 #include <Adafruit_L3GD20_U.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_10DOF.h>
+#include <Adafruit_Simple_AHRS.h>
 
 // Create instance of the radio driver
 RH_RF22 rf22;
@@ -196,72 +197,5 @@ bool sdWrite(char* strFileName, String data) {
     else {
         dataFile.close();
     }
-}
-
-char* floatToString(char * outstr, double val, byte precision, byte widthp) {
-    // Limit on digit precision. Increase this
-    // for more than 15 digits
-    char temp[16]; 
-    byte i;
-
-    temp[0] = '\0';
-    outstr[0] = '\0';
-
-    if (val < 0.0) {
-        strcpy(outstr, "-\0");  //print "-" sign
-        val *= -1;
-    }
-
-    // Print the integer component
-    if (precision == 0) {
-        strcat(outstr, ltoa(round(val), temp, 10));  
-    }
-    else {
-        unsigned long frac, mult = 1;
-        byte padding = precision - 1;
-
-        while (precision--) {
-            mult *= 10;
-        }
-
-        // Compute rounding factor
-        val += (0.5 / (float)mult);      
-
-        // Print the integer component without rounding
-        strcat(outstr, ltoa(floor(val), temp, 10));  
-        strcat(outstr, ".\0"); // print the decimal point
-
-        frac = (val - floor(val)) * mult;
-
-        unsigned long frac1 = frac;
-
-        while (frac1 /= 10)  {
-            padding--;
-        }
-
-        while (padding--) {
-            // Print padding zeros
-            strcat(outstr, "0\0");    
-        }
-
-        // Print fractional componecnt
-        strcat(outstr, ltoa(frac, temp, 10));  
-    }
-
-    // Generate width space padding 
-    if ((widthp != 0) && (widthp >= strlen(outstr))) {
-        byte J = 0;
-        J = widthp - strlen(outstr);
-
-        for (i = 0; i < J; i++) {
-            temp[i] = ' ';
-        }
-        temp[i++] = '\0';
-
-        strcat(temp, outstr);
-        strcpy(outstr, temp);
-    }
-
-    return outstr;
 }
 
