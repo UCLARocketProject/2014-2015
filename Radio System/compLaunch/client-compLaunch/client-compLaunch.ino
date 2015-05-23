@@ -9,6 +9,7 @@
 // mode: C++
 
 // Basic libraries
+#include <SD.h>
 #include <SPI.h>
 #include <Wire.h>
 #include <String.h>
@@ -37,7 +38,16 @@ char dataBuffer[RH_RF22_MAX_MESSAGE_LEN];
 const int fileNameSize = 9;
 char strFileName[fileNameSize];
 
-
+void initAccel()
+{
+  // accel.begin() method includes code for G-force range increase
+  if (!accel.begin())
+  {
+    Serial.println("accel.begin error");
+    /* There was a problem detecting the LSM303 ... check your connections */
+    while(1);
+  }
+}
 
 void setup() 
 {
@@ -74,7 +84,7 @@ void setup()
     getNewFileName();
     // Format of data from DOF
     sdWrite(strFileName, "AccelX, AccelY, AccelZ, Roll, Pitch, Heading");
-    sdWriteNewline();
+    sdWriteNewline(strFileName);
 
     
 }
@@ -96,15 +106,15 @@ void loop()
             orientation.heading
         );
 
-        sdWrite(dataBuffer);
-        sdWriteNewline();
+        sdWrite(strFileName, dataBuffer);
+        sdWriteNewline(strFileName);
     }
     else {
         sprintf(dataBuffer, "Failed to get accelerometer data.");
     }
     // Debug: Serial.println("Sending message to rf22_server");
     // Send a message to rf22_server
-    rf22.send(dataBuffer, sizeof(dataBuffer));
+    rf22.send((const uint8_t*)dataBuffer, sizeof(dataBuffer));
 
     rf22.waitPacketSent();
 
@@ -165,6 +175,7 @@ bool sdWriteNewline(char* strFileName) {
     File dataFile = SD.open(strFileName, FILE_WRITE);
     // If the file is available, write to it, 
     if (dataFile) {
+        dataFile.println(millis());
         dataFile.println("");
         dataFile.close();
     }
@@ -186,6 +197,7 @@ bool sdWrite(char* strFileName, String data) {
         dataFile.close();
     }
 }
+
 char* floatToString(char * outstr, double val, byte precision, byte widthp) {
     // Limit on digit precision. Increase this
     // for more than 15 digits

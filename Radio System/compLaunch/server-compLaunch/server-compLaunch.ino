@@ -43,7 +43,7 @@ void loop()
             //      Serial.println(rf22.lastRssi(), DEC);
 
             // Send a reply
-            uint8_t ack[] = "Acknowledgement from server.";`
+            uint8_t ack[] = "Acknowledgement from server.";
             rf22.send(ack, sizeof(ack));
             rf22.waitPacketSent();
             Serial.println("Sent an acknowledgement");
